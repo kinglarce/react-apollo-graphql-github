@@ -1,9 +1,9 @@
 import React from 'react';
 import { Query } from 'react-apollo';
-import { GET_CURRENT_USER } from './gql';
+import { GET_REPOSITORIES_OF_CURRENT_USER } from './gql';
 
 const Profile = () => (
-  <Query query={GET_CURRENT_USER}>
+  <Query query={GET_REPOSITORIES_OF_CURRENT_USER}>
     {({ data, loading }) => {
       const { viewer } = data;
 

@@ -1,10 +1,23 @@
 import gql from 'graphql-tag';
 
-export const GET_CURRENT_USER = gql`
-  {
+export const GET_REPOSITORIES_OF_CURRENT_USER = gql`
+    query($cursor: String) {
     viewer {
-      login
-      name
+        repositories(
+        first: 5
+        orderBy: { direction: DESC, field: STARGAZERS }
+        after: $cursor
+        ) {
+        edges {
+            node {
+            ...repository
+            }
+        }
+        pageInfo {
+            endCursor
+            hasNextPage
+        }
+        }
     }
-  }
+    }
 `;
