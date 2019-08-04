@@ -39,25 +39,22 @@ const RepositoryItem = ({
       </h2>
 
       <div>
-        <Mutation
-          mutation={WATCH_REPOSITORY}
+        <Mutation mutation={WATCH_REPOSITORY} 
           variables={{
             id,
-            viewerSubscription: isWatch(viewerSubscription)
+            viewerSubscription: isWatch(viewerSubscription) 
               ? VIEWER_SUBSCRIPTIONS.UNSUBSCRIBED
               : VIEWER_SUBSCRIPTIONS.SUBSCRIBED,
-          }}
-        >
-          {(updateSubscription, { data, loading, error }) => (
-            <Button
-              className="RepositoryItem-title-action"
-              data-test-id="updateSubscription"
+          }}>
+          {(updateSubscription, { data, loading, error}) => {
+            return (<Button
+              className={'RepositoryItem-title-action'}
               onClick={updateSubscription}
             >
               {watchers.totalCount}{' '}
               {isWatch(viewerSubscription) ? 'Unwatch' : 'Watch'}
-            </Button>
-          )}
+            </Button>)
+          }}
         </Mutation>
 
         {!viewerHasStarred ? (
