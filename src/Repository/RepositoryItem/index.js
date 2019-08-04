@@ -1,10 +1,17 @@
 import React from 'react';
+import { Mutation } from 'react-apollo';
 
 import Link from '../../Link';
+import Button from '../../Button';
+
+import {
+  STAR_REPOSITORY
+} from '../mutations';
 
 import '../style.css';
 
 const RepositoryItem = ({
+  id,
   name,
   url,
   descriptionHTML,
@@ -22,7 +29,16 @@ const RepositoryItem = ({
       </h2>
 
       <div className="RepositoryItem-title-action">
-        {stargazers.totalCount} Stars
+        <Mutation mutation={STAR_REPOSITORY} variables={{ id }}>
+          {(addStar, { data, loading, error }) => (
+            <Button
+              className={'RepositoryItem-title-action'}
+              onClick={addStar}
+            >
+              {stargazers.totalCount} Star
+            </Button>
+          )}
+        </Mutation>
       </div>
     </div>
 
