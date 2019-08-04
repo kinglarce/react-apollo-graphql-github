@@ -1,6 +1,6 @@
 import React from 'react';
 import { graphql } from 'react-apollo';
-import { GET_REPOSITORIES_OF_CURRENT_USER } from './gql';
+import { GET_REPOSITORIES_OF_CURRENT_USER } from './queries';
 
 import Loading from '../Loading';
 import RepositoryList from '../Repository';
