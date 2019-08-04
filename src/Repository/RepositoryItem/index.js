@@ -45,7 +45,24 @@ const updateAddStar = (
     id: `Repository:${id}`,
     fragment: REPOSITORY_FRAGMENT,
     data: getUpdatedStarData(cache, id, viewerHasStarred),
-});
+  });
+
+const updateRemoveStar = (
+  cache,
+  {
+    data: {
+      removeStar: {
+        starrable: { id, viewerHasStarred },
+      },
+    },
+  },
+) => 
+  cache.writeFragment({
+    id: `Repository:${id}`,
+    fragment: REPOSITORY_FRAGMENT,
+    data: getUpdatedStarData(cache, id, viewerHasStarred),
+  });
+
 
 const RepositoryItem = ({
   id,
@@ -85,7 +102,7 @@ const RepositoryItem = ({
             )}
           </Mutation>
         ) : (
-          <Mutation mutation={UNSTAR_REPOSITORY} variables={{ id }}>
+          <Mutation mutation={UNSTAR_REPOSITORY} variables={{ id }} update={updateRemoveStar}>
             {(removeStar, { data, loading, error }) => (
               <Button
                 className="RepositoryItem-title-action"
