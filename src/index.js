@@ -39,16 +39,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   }
 });
 
-const retryLink = new RetryLink({
-  attempts: (count, operation, error) => {
-    console.log('attempt the count and error : ', count, ' - ', error, ' - ', operation);
-    return !!error && operation.operationName != 'specialCase';
-  },
-  delay: (count, operation, error) => {
-    console.log('delay : ', count);
-    return count * 1000 * Math.random();
-  },
-});
+const retryLink = new RetryLink();
 
 const link = ApolloLink.from([errorLink, httpLink, retryLink]);
 
