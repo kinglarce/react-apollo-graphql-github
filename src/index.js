@@ -41,7 +41,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 
 const retryLink = new RetryLink();
 
-const link = ApolloLink.from([errorLink, httpLink, retryLink]);
+const link = ApolloLink.from([errorLink, retryLink, httpLink]);
 
 const cache = new InMemoryCache();
 
