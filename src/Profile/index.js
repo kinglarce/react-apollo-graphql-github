@@ -2,20 +2,20 @@ import React from 'react';
 import { Query } from 'react-apollo';
 import { GET_REPOSITORIES_OF_CURRENT_USER } from './gql';
 
+import Loading from '../Loading';
+import RepositoryList from '../Repository';
+
 const Profile = () => (
   <Query query={GET_REPOSITORIES_OF_CURRENT_USER}>
     {({ data, loading }) => {
+      console.log({ data, loading });
       const { viewer } = data;
 
       if (loading || !viewer) {
-        return <div>Loading ...</div>;
+        return <Loading />;
       }
 
-      return (
-        <div>
-          {viewer.name} {viewer.login}
-        </div>
-      );
+      return <RepositoryList repositories={viewer.repositories} />;
     }}
   </Query>
 );
