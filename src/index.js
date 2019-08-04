@@ -6,6 +6,8 @@ import { ApolloLink } from 'apollo-link';
 import { HttpLink } from 'apollo-link-http';
 import { onError } from 'apollo-link-error';
 import { InMemoryCache } from 'apollo-cache-inmemory';
+import { RetryLink } from "apollo-link-retry";
+
 
 import * as serviceWorker from './serviceWorker';
 import App from './App';
@@ -37,7 +39,18 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   }
 });
 
-const link = ApolloLink.from([errorLink, httpLink]);
+const retryLink = new RetryLink({
+  attempts: (count, operation, error) => {
+    console.log('attempt the count and error : ', count, ' - ', error, ' - ', operation);
+    return !!error && operation.operationName != 'specialCase';
+  },
+  delay: (count, operation, error) => {
+    console.log('delay : ', count);
+    return count * 1000 * Math.random();
+  },
+});
+
+const link = ApolloLink.from([errorLink, httpLink, retryLink]);
 
 const cache = new InMemoryCache();
 
