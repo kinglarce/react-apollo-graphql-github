@@ -2,6 +2,7 @@ import React from 'react';
 import { Mutation } from 'react-apollo';
 import RepositorySubscription from '../RepositorySubscription';
 
+import REPOSITORY_FRAGMENT from '../fragments';
 import Link from '../../Link';
 import Button from '../../Button';
 
@@ -11,6 +12,40 @@ import {
   STAR_REPOSITORY,
   UNSTAR_REPOSITORY,
 } from '../mutations';
+
+const getUpdatedStarData = (cache, id, viewerHasStarred) => {
+  const repository = cache.readFragment({
+    id: `Repository:${id}`,
+    fragment: REPOSITORY_FRAGMENT,
+  });
+
+  let { totalCount } = repository.stargazers;
+  totalCount = viewerHasStarred ? totalCount + 1 : totalCount - 1;
+
+  return {
+    ...repository,
+    stargazers: {
+      ...repository.stargazers,
+      totalCount,
+    },
+  };
+};
+
+const updateAddStar = (
+  cache,
+  {
+    data: {
+      addStar: {
+        starrable: { id, viewerHasStarred },
+      },
+    },
+  },
+) =>
+  cache.writeFragment({
+    id: `Repository:${id}`,
+    fragment: REPOSITORY_FRAGMENT,
+    data: getUpdatedStarData(cache, id, viewerHasStarred),
+});
 
 const RepositoryItem = ({
   id,
@@ -39,7 +74,7 @@ const RepositoryItem = ({
         />
 
         {!viewerHasStarred ? (
-          <Mutation mutation={STAR_REPOSITORY} variables={{ id }}>
+          <Mutation mutation={STAR_REPOSITORY} variables={{ id }} update={updateAddStar}>
             {(addStar, { data, loading, error }) => (
               <Button
                 className={'RepositoryItem-title-action'}
