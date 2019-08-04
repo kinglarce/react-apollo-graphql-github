@@ -1,5 +1,6 @@
 import React from 'react';
 import { Mutation } from 'react-apollo';
+import RepositorySubscription from '../RepositorySubscription';
 
 import Link from '../../Link';
 import Button from '../../Button';
@@ -9,16 +10,7 @@ import '../style.css';
 import {
   STAR_REPOSITORY,
   UNSTAR_REPOSITORY,
-  WATCH_REPOSITORY,
 } from '../mutations';
-
-const VIEWER_SUBSCRIPTIONS = {
-  SUBSCRIBED: 'SUBSCRIBED',
-  UNSUBSCRIBED: 'UNSUBSCRIBED',
-};
-
-const isWatch = viewerSubscription =>
-  viewerSubscription === VIEWER_SUBSCRIPTIONS.SUBSCRIBED;
 
 const RepositoryItem = ({
   id,
@@ -39,23 +31,12 @@ const RepositoryItem = ({
       </h2>
 
       <div>
-        <Mutation mutation={WATCH_REPOSITORY} 
-          variables={{
-            id,
-            viewerSubscription: isWatch(viewerSubscription) 
-              ? VIEWER_SUBSCRIPTIONS.UNSUBSCRIBED
-              : VIEWER_SUBSCRIPTIONS.SUBSCRIBED,
-          }}>
-          {(updateSubscription, { data, loading, error}) => {
-            return (<Button
-              className={'RepositoryItem-title-action'}
-              onClick={updateSubscription}
-            >
-              {watchers.totalCount}{' '}
-              {isWatch(viewerSubscription) ? 'Unwatch' : 'Watch'}
-            </Button>)
-          }}
-        </Mutation>
+        
+        <RepositorySubscription 
+          id={id} 
+          watchers={watchers} 
+          viewerSubscription={viewerSubscription} 
+        />
 
         {!viewerHasStarred ? (
           <Mutation mutation={STAR_REPOSITORY} variables={{ id }}>
