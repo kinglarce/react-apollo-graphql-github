@@ -7,28 +7,6 @@ const updateQuery = (previousResult, { fetchMoreResult }) => {
     return previousResult;
   }
 
-  console.log('what result : ', previousResult);
-  console.log('fetched more result : ', fetchMoreResult);
-  console.log('full : ', {
-    ...previousResult,
-    repository: {
-      ...previousResult.repository,
-      ...fetchMoreResult.repository,
-      issue: {
-        ...previousResult.repository.issue,
-        ...fetchMoreResult.repository.issue,
-        comments: {
-          ...previousResult.repository.issue.comments,
-          ...fetchMoreResult.repository.issue.comments,
-          edges: [
-            ...previousResult.repository.issue.comments.edges,
-            ...fetchMoreResult.repository.issue.comments.edges,
-          ],
-        },
-      },
-    },
-  });
-
   // The spread with is only previousResult is used for the __typename
   return {
     ...previousResult,
