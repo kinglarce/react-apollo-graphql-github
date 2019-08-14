@@ -11,7 +11,7 @@ import './style.css';
 
 const App = () => {
   const [organizationName, setOrganizationName] = useState(
-    'facebook',
+    'the-road-to-learn-react',
   );
 
   const onOrganizationSearch = useCallback((searched) => {

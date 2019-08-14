@@ -9,6 +9,7 @@ const GET_ISSUE_COMMENTS = gql`
   ) {
     repository(owner: $repositoryOwner, name: $repositoryName) {
       issue(number: $issueNumber) {
+        id
         comments(first: 5, after: $cursor) {
           edges {
             node {

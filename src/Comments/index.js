@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import CommentList from './CommentList';
+import CommentAdd from './CommentAdd';
 import { graphql, ApolloConsumer } from 'react-apollo';
 import { GET_ISSUE_COMMENTS } from './queries';
 import Loading from '../Loading';
@@ -22,20 +23,21 @@ const Comments = ({
     return <Loading />;
   }
 
-  const {
-    issue: { comments },
-  } = repository;
+  const { issue } = repository;
 
-  if (!comments.edges.length) {
+  if (!issue.comments.edges.length) {
     return <div>No comments ...</div>;
   }
 
   return (
-    <CommentList
-      loading={loading}
-      comments={comments}
-      fetchMore={fetchMore}
-    />
+    <Fragment>
+      <CommentList
+        loading={loading}
+        comments={issue.comments}
+        fetchMore={fetchMore}
+      />
+      <CommentAdd issueId={issue.id} />
+    </Fragment>
   );
 };
 
