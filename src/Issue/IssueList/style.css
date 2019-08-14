@@ -1,0 +1,15 @@
+.Issues-content {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+}
+  
+.IssueList {
+margin: 20px 0;
+}
+
+@media only screen and (max-device-width: 480px) {
+    .Issues-content {
+        align-items: center;
+    }
+}
