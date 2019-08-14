@@ -1,29 +1,11 @@
 import React from 'react';
 import { ApolloConsumer } from 'react-apollo';
-import { GET_ISSUE_COMMENTS } from '../queries';
+import { clientPrefetchComments } from '../container';
 import Button from '../../Button';
 
 const COMMENT_LABELS = {
   [true]: 'Closed Comment',
   [false]: 'Open Comment',
-};
-
-const prefetchComments = props => {
-  const {
-    client,
-    issueNumber,
-    repositoryName,
-    repositoryOwner,
-  } = props;
-
-  client.query({
-    query: GET_ISSUE_COMMENTS,
-    variables: {
-      issueNumber,
-      repositoryName,
-      repositoryOwner,
-    },
-  });
 };
 
 const CommentToggler = ({
@@ -40,7 +22,7 @@ const CommentToggler = ({
           <Button
             onClick={() => setToggleComment(!toggleComment)}
             onMouseOver={() =>
-              prefetchComments({
+              clientPrefetchComments({
                 client,
                 issueNumber,
                 repositoryName,

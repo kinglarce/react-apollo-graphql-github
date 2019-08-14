@@ -1,11 +1,11 @@
 import React, { Fragment } from 'react';
+import { compose } from 'react-apollo';
 import CommentList from './CommentList';
 import CommentAdd from './CommentAdd';
-import { graphql } from 'react-apollo';
-import { GET_ISSUE_COMMENTS } from './queries';
 import Loading from '../Loading';
 import ErrorMessage from '../Error';
 import CommentToggler from './CommentToggler';
+import { withQuery } from './container';
 
 const Comments = ({
   data: { loading, error, repository, fetchMore },
@@ -38,12 +38,4 @@ const Comments = ({
 
 export { CommentToggler };
 
-export default graphql(GET_ISSUE_COMMENTS, {
-  options: ({ issueNumber, repositoryName, repositoryOwner }) => ({
-    variables: {
-      issueNumber,
-      repositoryName,
-      repositoryOwner,
-    },
-  }),
-})(Comments);
+export default compose(withQuery)(Comments);
