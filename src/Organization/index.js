@@ -3,6 +3,10 @@ import React from 'react';
 import { Query } from 'react-apollo';
 import { GET_REPOSITORIES_OF_ORGANIZATION } from './queries';
 
+import RepositoryList from '../Repository';
+import Loading from '../Loading';
+import ErrorMessage from '../Error';
+
 const Organization = ({ organizationName }) => (
   <Query
     query={GET_REPOSITORIES_OF_ORGANIZATION}
@@ -13,7 +17,23 @@ const Organization = ({ organizationName }) => (
     notifyOnNetworkStatusChange={true}
   >
     {({ data, loading, error, fetchMore }) => {
-      console.log('the org data : ', { data, loading, error, fetchMore });
+      if (error) {
+        return <ErrorMessage error={error} />;
+      }
+
+      const { organization } = data;
+
+      if (loading && !organization) {
+        return <Loading />;
+      }
+
+      return (
+        <RepositoryList
+          loading={loading}
+          repositories={organization.repositories}
+          fetchMore={fetchMore}
+        />
+      );
     }}
   </Query>
 );
