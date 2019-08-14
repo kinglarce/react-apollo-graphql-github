@@ -5,7 +5,9 @@ import { GET_ISSUE_COMMENTS } from './queries';
 import Loading from '../Loading';
 import ErrorMessage from '../Error';
 
-const Comments = ({ data: { loading, error, repository } }) => {
+const Comments = ({
+  data: { loading, error, repository, fetchMore },
+}) => {
   if (error) {
     return <ErrorMessage error={error} />;
   }
@@ -22,7 +24,13 @@ const Comments = ({ data: { loading, error, repository } }) => {
     return <div>No comments ...</div>;
   }
 
-  return <CommentList comments={comments} />;
+  return (
+    <CommentList
+      loading={loading}
+      comments={comments}
+      fetchMore={fetchMore}
+    />
+  );
 };
 
 export default graphql(GET_ISSUE_COMMENTS, {

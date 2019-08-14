@@ -5,10 +5,11 @@ const GET_ISSUE_COMMENTS = gql`
     $repositoryOwner: String!
     $repositoryName: String!
     $issueNumber: Int!
+    $cursor: String
   ) {
     repository(owner: $repositoryOwner, name: $repositoryName) {
       issue(number: $issueNumber) {
-        comments(first: 5) {
+        comments(first: 5, after: $cursor) {
           edges {
             node {
               id
@@ -17,6 +18,10 @@ const GET_ISSUE_COMMENTS = gql`
               }
               bodyHTML
             }
+          }
+          pageInfo {
+            endCursor
+            hasNextPage
           }
         }
       }
