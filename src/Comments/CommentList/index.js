@@ -44,7 +44,7 @@ const CommentList = ({ loading, comments, fetchMore }) => (
       updateQuery={updateQuery}
       fetchMore={fetchMore}
     >
-      Repositories
+      Comments
     </FetchMore>
   </div>
 );

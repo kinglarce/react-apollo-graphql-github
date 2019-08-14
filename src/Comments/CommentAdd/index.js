@@ -1,20 +1,26 @@
 import React, { useState, useCallback } from 'react';
 import { graphql } from 'react-apollo';
 import { ADD_COMMENT } from '../mutations';
-import { ISSUE_FRAGMENT, GET_ISSUE_COMMENTS } from '../queries';
+import { ISSUE_FRAGMENT } from '../queries';
 import TextArea from '../../TextArea';
 import Button from '../../Button';
 import ErrorMessage from '../../Error';
 
-const updateCommentsCache = (cache, { data: { addComment } }) => {
-  const { commentEdge } = addComment;
+// Prevent from desctructuing in the parameter level and do it inside the function
+// because there's a difference. Destructuring in the parameter level result into 
+// not finding the `commentEdge` from the optimisticUI
+const updateCommentsCache = (cache, { data }) => {
+  // Destructure here to make the optimistic UI work
+  const {
+    addComment: { commentEdge },
+  } = data;
   const {
     node: {
       issue: { id: issueId },
     },
   } = commentEdge;
 
-  const issueFrag = cache.readFragment({
+  const issueFragment = cache.readFragment({
     id: `Issue:${issueId}`,
     fragment: ISSUE_FRAGMENT,
   });
@@ -23,14 +29,36 @@ const updateCommentsCache = (cache, { data: { addComment } }) => {
     id: `Issue:${issueId}`,
     fragment: ISSUE_FRAGMENT,
     data: {
-      ...issueFrag,
+      ...issueFragment,
       comments: {
-        ...issueFrag.comments,
-        edges: [...issueFrag.comments.edges, commentEdge],
+        ...issueFragment.comments,
+        edges: [...issueFragment.comments.edges, commentEdge],
       },
     },
   });
 };
+
+const optimisticUIComment = (issueId, body) => ({
+  addComment: {
+    commentEdge: {
+      node: {
+        author: {
+          login: 'kinglarce',
+          __typename: 'User',
+        },
+        bodyHTML: body,
+        id: '',
+        issue: {
+          id: issueId,
+          __typename: 'Issue',
+        },
+        __typename: 'IssueComment',
+      },
+      __typename: 'IssueCommentEdge',
+    },
+    __typename: 'AddCommentPayload',
+  },
+});
 
 const CommentAdd = ({ issueId, mutate, result: { error } }) => {
   const [body, setBody] = useState('');
@@ -44,7 +72,9 @@ const CommentAdd = ({ issueId, mutate, result: { error } }) => {
         body,
         subjectId: issueId,
       },
+      optimisticResponse: optimisticUIComment(issueId, body),
     }).then(() => setBody(''));
+
     event.preventDefault();
   };
 
