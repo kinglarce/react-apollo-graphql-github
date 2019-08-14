@@ -46,6 +46,19 @@ const updateWatch = (
   });
 };
 
+const optimisticWatch = (id, viewerSubscription) => ({
+  updateSubscription: {
+    __typename: 'Mutation',
+    subscribable: {
+      __typename: 'Repository',
+      id,
+      viewerSubscription: isWatch(viewerSubscription)
+        ? VIEWER_SUBSCRIPTIONS.UNSUBSCRIBED
+        : VIEWER_SUBSCRIPTIONS.SUBSCRIBED,
+    },
+  },
+});
+
 const RepositorySubscription = ({
   watchers,
   viewerSubscription,
@@ -70,6 +83,7 @@ export default graphql(WATCH_REPOSITORY, {
         ? VIEWER_SUBSCRIPTIONS.UNSUBSCRIBED
         : VIEWER_SUBSCRIPTIONS.SUBSCRIBED,
     },
-    update: updateWatch
+    update: updateWatch,
+    optimisticResponse: optimisticWatch(id, viewerSubscription)
   }),
 })(RepositorySubscription);

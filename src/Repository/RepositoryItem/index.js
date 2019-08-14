@@ -8,10 +8,7 @@ import Button from '../../Button';
 
 import '../style.css';
 
-import {
-  STAR_REPOSITORY,
-  UNSTAR_REPOSITORY,
-} from '../mutations';
+import { STAR_REPOSITORY, UNSTAR_REPOSITORY } from '../mutations';
 
 const getUpdatedStarData = (cache, id, viewerHasStarred) => {
   const repository = cache.readFragment({
@@ -56,13 +53,29 @@ const updateRemoveStar = (
       },
     },
   },
-) => 
+) =>
   cache.writeFragment({
     id: `Repository:${id}`,
     fragment: REPOSITORY_FRAGMENT,
     data: getUpdatedStarData(cache, id, viewerHasStarred),
   });
 
+// Although below will(the commented out) still work but GQL will complain on console because this
+// is not an object literal anymore, but as a class object. For Render-props, it is ideal to just put it inlined.
+// Warning: Failed prop type: Invalid prop `optimisticResponse` of type `function` supplied to `Mutation`, expected `object`.
+
+// const optimisticStarTempData = ({ id, viewerHasStarred }) => ({
+//   __typename: 'Mutation',
+//   starrable: {
+//     __typename: 'Repository',
+//     id,
+//     viewerHasStarred: !viewerHasStarred,
+//   },
+// });
+
+// const optimisticAddStar = variables => ({
+//   addStar: optimisticStarTempData(variables),
+// });
 
 const RepositoryItem = ({
   id,
@@ -83,15 +96,28 @@ const RepositoryItem = ({
       </h2>
 
       <div>
-        
-        <RepositorySubscription 
-          id={id} 
-          watchers={watchers} 
-          viewerSubscription={viewerSubscription} 
+        <RepositorySubscription
+          id={id}
+          watchers={watchers}
+          viewerSubscription={viewerSubscription}
         />
 
         {!viewerHasStarred ? (
-          <Mutation mutation={STAR_REPOSITORY} variables={{ id }} update={updateAddStar}>
+          <Mutation
+            mutation={STAR_REPOSITORY}
+            variables={{ id, viewerHasStarred }}
+            update={updateAddStar}
+            optimisticResponse={{
+              addStar: {
+                __typename: 'Mutation',
+                starrable: {
+                  __typename: 'Repository',
+                  id,
+                  viewerHasStarred: !viewerHasStarred,
+                },
+              },
+            }}
+          >
             {(addStar, { data, loading, error }) => (
               <Button
                 className={'RepositoryItem-title-action'}
@@ -102,7 +128,21 @@ const RepositoryItem = ({
             )}
           </Mutation>
         ) : (
-          <Mutation mutation={UNSTAR_REPOSITORY} variables={{ id }} update={updateRemoveStar}>
+          <Mutation
+            mutation={UNSTAR_REPOSITORY}
+            variables={{ id, viewerHasStarred }}
+            update={updateRemoveStar}
+            optimisticResponse={{
+              removeStar: {
+                __typename: 'Mutation',
+                starrable: {
+                  __typename: 'Repository',
+                  id,
+                  viewerHasStarred: !viewerHasStarred,
+                },
+              },
+            }}
+          >
             {(removeStar, { data, loading, error }) => (
               <Button
                 className="RepositoryItem-title-action"
