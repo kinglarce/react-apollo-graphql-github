@@ -90,7 +90,11 @@ const Issues = ({
         onChangeIssueState={setIssueState}
       />
 
-      <IssueList issues={repository.issues} />
+      <IssueList
+        issues={repository.issues}
+        repositoryOwner={repositoryOwner}
+        repositoryName={repositoryName}
+      />
     </div>
   );
 };
