@@ -11,12 +11,13 @@ const Profile = ({ data: { loading, error, fetchMore, viewer } }) => {
     return <ErrorMessage error={error} />;
   }
 
-  if (loading || !viewer) {
+  if (loading && !viewer) {
     return <Loading />;
   }
 
   return (
     <RepositoryList
+      loading={loading}
       repositories={viewer.repositories}
       fetchMore={fetchMore}
     />
