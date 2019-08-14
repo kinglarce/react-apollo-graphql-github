@@ -20,7 +20,7 @@ const Organization = ({ organizationName }) => (
       if (error) {
         return <ErrorMessage error={error} />;
       }
-
+      
       const { organization } = data;
 
       if (loading && !organization) {
@@ -32,6 +32,7 @@ const Organization = ({ organizationName }) => (
           loading={loading}
           repositories={organization.repositories}
           fetchMore={fetchMore}
+          entry={'organization'}
         />
       );
     }}

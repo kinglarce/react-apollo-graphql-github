@@ -20,6 +20,7 @@ const Profile = ({ data: { loading, error, fetchMore, viewer } }) => {
       loading={loading}
       repositories={viewer.repositories}
       fetchMore={fetchMore}
+      entry={'viewer'}
     />
   );
 };
