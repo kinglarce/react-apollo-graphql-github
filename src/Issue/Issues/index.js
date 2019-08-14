@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { Query } from 'react-apollo';
+import React from 'react';
 import Loading from '../../Loading';
 import ErrorMessage from '../../Error';
 import { GET_ISSUES_OF_REPOSITORY } from './queries';
@@ -7,29 +6,26 @@ import IssueList from '../IssueList';
 import { ButtonUnobtrusive } from '../../Button';
 import { graphql } from 'react-apollo';
 
-const ISSUE_STATES = {
-  NONE: 'NONE',
+export const ISSUE_STATES = {
   OPEN: 'OPEN',
   CLOSED: 'CLOSED',
 };
 
 const TRANSITION_LABELS = {
-  [ISSUE_STATES.NONE]: 'Show Open Issues',
   [ISSUE_STATES.OPEN]: 'Show Closed Issues',
-  [ISSUE_STATES.CLOSED]: 'Hide Issues',
+  [ISSUE_STATES.CLOSED]: 'Show Open Issues',
 };
 
 const TRANSITION_STATE = {
-  [ISSUE_STATES.NONE]: ISSUE_STATES.OPEN,
   [ISSUE_STATES.OPEN]: ISSUE_STATES.CLOSED,
-  [ISSUE_STATES.CLOSED]: ISSUE_STATES.NONE,
+  [ISSUE_STATES.CLOSED]: ISSUE_STATES.OPEN,
 };
 
-const isShow = issueState => issueState !== ISSUE_STATES.NONE;
-
-const Issues = ({ data: { loading, error, repository } }) => {
-  const [issueState, setIssueState] = useState(ISSUE_STATES.NONE);
-
+const Issues = ({
+  data: { loading, error, repository },
+  issueState,
+  setIssueState,
+}) => {
   if (error) {
     return <ErrorMessage error={error} />;
   }
@@ -37,14 +33,6 @@ const Issues = ({ data: { loading, error, repository } }) => {
   if (loading && !repository) {
     return <Loading />;
   }
-
-  const filteredRepository = {
-    issues: {
-      edges: repository.issues.edges.filter(
-        issue => issue.node.state === issueState,
-      ),
-    },
-  };
 
   return (
     <div className="Issues">
@@ -54,21 +42,17 @@ const Issues = ({ data: { loading, error, repository } }) => {
         {TRANSITION_LABELS[issueState]}
       </ButtonUnobtrusive>
 
-      {isShow(issueState) &&
-        (!filteredRepository.issues.edges.length ? (
-          <div className="IssueList">No issues ...</div>
-        ) : (
-          <IssueList issues={filteredRepository.issues} />
-        ))}
+      <IssueList issues={repository.issues} />
     </div>
   );
 };
 
 export default graphql(GET_ISSUES_OF_REPOSITORY, {
-  options: ({ repositoryOwner, repositoryName }) => ({
+  options: ({ repositoryOwner, repositoryName, issueState }) => ({
     variables: {
       repositoryOwner,
       repositoryName,
+      issueState,
     },
   }),
 })(Issues);
