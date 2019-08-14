@@ -1,9 +1,36 @@
 import React, { useState, useCallback } from 'react';
 import { graphql } from 'react-apollo';
 import { ADD_COMMENT } from '../mutations';
+import { ISSUE_FRAGMENT, GET_ISSUE_COMMENTS } from '../queries';
 import TextArea from '../../TextArea';
 import Button from '../../Button';
 import ErrorMessage from '../../Error';
+
+const updateCommentsCache = (cache, { data: { addComment } }) => {
+  const { commentEdge } = addComment;
+  const {
+    node: {
+      issue: { id: issueId },
+    },
+  } = commentEdge;
+
+  const issueFrag = cache.readFragment({
+    id: `Issue:${issueId}`,
+    fragment: ISSUE_FRAGMENT,
+  });
+
+  cache.writeFragment({
+    id: `Issue:${issueId}`,
+    fragment: ISSUE_FRAGMENT,
+    data: {
+      ...issueFrag,
+      comments: {
+        ...issueFrag.comments,
+        edges: [...issueFrag.comments.edges, commentEdge],
+      },
+    },
+  });
+};
 
 const CommentAdd = ({ issueId, mutate, result: { error } }) => {
   const [body, setBody] = useState('');
@@ -39,4 +66,8 @@ const CommentAdd = ({ issueId, mutate, result: { error } }) => {
   );
 };
 
-export default graphql(ADD_COMMENT)(CommentAdd);
+export default graphql(ADD_COMMENT, {
+  options: {
+    update: updateCommentsCache,
+  },
+})(CommentAdd);

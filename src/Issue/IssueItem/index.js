@@ -6,7 +6,7 @@ import './style.css';
 
 const IssueItem = ({ issue, ...rest }) => {
   const [toggleComment, setToggleComment] = useState(false);
-
+  
   return (
     <div className="IssueItem">
       <div className="IssueItem-content">

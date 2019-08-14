@@ -5,7 +5,14 @@ const ADD_COMMENT = gql`
     addComment(input: { subjectId: $subjectId, body: $body }) {
       commentEdge {
         node {
-          body
+          id
+          author {
+            login
+          }
+          bodyHTML
+          issue {
+            id
+          }
         }
       }
     }
